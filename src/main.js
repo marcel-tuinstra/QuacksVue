@@ -4,6 +4,8 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
+import './assets/main.scss'
+
 createApp(App)
     .use(createAuth0({
         domain: process.env.VUE_APP_AUTH_DOMAIN,
