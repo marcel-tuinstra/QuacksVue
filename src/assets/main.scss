@@ -1,3 +1,110 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+// TailwindCSS
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+// CodeDucks
+@import './codeducks/icons';
+@import './codeducks/layout/navigation';
+@import './codeducks/layout/footer';
+
+// Overwrites
+.tabs {
+    .tab {
+        --tab-padding: .5rem;
+
+        &::after {
+            padding-left: .75rem;
+            text-indent:  var(--tab-padding, 1rem);
+            white-space:  nowrap;
+        }
+
+        &:is(button) > i {
+            opacity: .5;
+        }
+
+        &:is(button):hover > i {
+            opacity: 1;
+        }
+    }
+
+    .tab:is(input) {
+        &:not(input:checked)::before, &:not(input:checked)::after {
+            opacity: .5;
+        }
+
+        &:hover {
+            &:not(input:checked)::before, &:not(input:checked)::after {
+                opacity: 1;
+            }
+        }
+
+        &::before {
+            content:     '\f188';
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            left:        var(--tab-padding, 1rem);
+            position:    absolute;
+        }
+
+        &[data-icon="plus"] {
+            &::before {
+                content: '\2b';
+            }
+        }
+
+        &[data-icon="folder"] {
+            &::before {
+                content: '\e185';
+            }
+        }
+
+        &[data-icon="client"] {
+            &::before {
+                content: '\f508';
+            }
+        }
+
+        &[data-icon="side"] {
+            &::before {
+                content: '\f186';
+            }
+        }
+
+        &[data-icon="urgent"] {
+            &::before {
+                content: '\f06d';
+            }
+        }
+
+        &[data-icon="check"] {
+            &::before {
+                content: '\f058';
+            }
+        }
+
+        &[data-icon="day"] {
+            &::before {
+                content: '\f783';
+            }
+        }
+
+        &[data-icon="week"] {
+            &::before {
+                content: '\f784';
+            }
+        }
+
+        &[data-icon="month"] {
+            &::before {
+                content: '\f073';
+            }
+        }
+
+        &[data-icon="completed"] {
+            &::before {
+                content: '\f187';
+            }
+        }
+    }
+}

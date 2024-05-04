@@ -1,19 +1,15 @@
 <template>
-    <div>
-        <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" @click="getUsers()">Test call</button>
-        <ul>
-            <li v-for="(user, index) in users" :key="user.id">
-                {{ index }}: {{ user }}
-            </li>
-        </ul>
-    </div>
+    <h2 class="mb-2">User Profile</h2>
+
+    {{ currentUser }}
 </template>
 
 <script>
 import UserAPI from "@/services/UserAPI";
+import store from "@/store";
 
 export default {
-    name: 'HomeView',
+    name: 'ProjectsView',
     data: function () {
         return {
             users: null
@@ -27,6 +23,11 @@ export default {
             } catch (error) {
                 console.error('There was an error fetching the users:', error);
             }
+        }
+    },
+    computed: {
+        currentUser() {
+            return store.getters.currentUser;
         }
     }
 }

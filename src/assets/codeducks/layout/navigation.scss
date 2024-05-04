@@ -1,0 +1,31 @@
+aside.navigation {
+    .router-link, .router-link > div[role="button"] {
+        align-items:     center;
+        display:         flex;
+        flex-direction:  column;
+        height:          70px;
+        justify-content: center;
+        width:           80px;
+
+        i:first-of-type {
+            font-size:   1.125rem; /* 18px */
+            line-height: 1.75rem; /* 28px */
+        }
+
+        span:first-of-type {
+            font-size:   0.75rem; /* 12px */
+            line-height: 1rem; /* 16px */
+
+        }
+    }
+
+    a.router-link:not(.router-link-active),
+    .router-link > div[role="button"] {
+        opacity: .5;
+
+        &:focus,
+        &:hover {
+            opacity: 1;
+        }
+    }
+}

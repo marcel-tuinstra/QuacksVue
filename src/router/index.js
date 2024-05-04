@@ -1,8 +1,10 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import {authGuard} from "@auth0/auth0-vue";
 import AuthService from "@/services/AuthService";
-import HomeView from '@/views/HomeView.vue'
 import CallbackView from "@/views/CallbackView.vue";
+import HomeView from '@/views/HomeView.vue'
+import ProjectsView from '@/views/ProjectsView.vue'
+import ProfileView from "@/views/ProfileView.vue";
 
 function customAuthGuard(to, from, next) {
     if (from.name === "callback") {
@@ -28,9 +30,38 @@ function customAuthGuard(to, from, next) {
 const router = createRouter({
     history: createWebHistory(process.env.BASE_URL),
     routes: [
-        {path: '/', name: 'home', component: HomeView, beforeEnter: customAuthGuard},
-        {path: '/callback', name: 'callback', component: CallbackView},
+        {
+            path: '/callback',
+            name: 'callback',
+            component: CallbackView
+        },
+        {
+            path: '/',
+            name: 'home',
+            component: HomeView,
+            meta: {title: 'My Dashboard'},
+            beforeEnter: customAuthGuard
+        },
+        {
+            path: '/project',
+            name: 'project',
+            component: ProjectsView,
+            meta: {title: 'Project Management'},
+            beforeEnter: customAuthGuard
+        },
+        {
+            path: '/profile',
+            name: 'profile',
+            component: ProfileView,
+            meta: {title: 'Profile'},
+            beforeEnter: customAuthGuard
+        },
     ]
 })
+
+router.beforeEach((to, from, next) => {
+    document.title = "Quacks | " + to.meta.title || '???';  // Set the document title using the meta title
+    next();
+});
 
 export default router

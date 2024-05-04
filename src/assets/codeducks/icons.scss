@@ -1,0 +1,17 @@
+// Define your icon sizes in a map
+$icon-sizes: (
+        'xs': 16px,
+        'sm': 20px,
+        'md': 24px,
+        'lg': 32px,
+        'xl': 48px,
+);
+
+// Loop through the map to generate classes
+@each $size, $value in $icon-sizes {
+  .icon-#{$size} {
+    width: $value;
+    height: $value;
+    // Additional styles if needed
+  }
+}
