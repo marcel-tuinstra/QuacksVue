@@ -21,6 +21,23 @@
         </div>
     </div>
 
+    <div class="block md:flex md:gap-3 justify-between mt-5">
+        <div class="opacity-25">Some reserved space :)</div>
+        <div class="hidden md:block w-60 lg:w-72 bg-base-200 base-content p-3 rounded-lg">
+            <h3 class="font-bold text-lg text-nowrap border-b border-base-300 mb-2 pb-2 truncate">{{ currentUser.name }}</h3>
+            <div class="columns-2">
+                <div class="w-full flex flex-col">
+                    <span class="font-bold text-sm">9</span>
+                    <span class="text-xs">Projects</span>
+                </div>
+                <div class="w-full flex flex-col">
+                    <span class="font-bold text-sm">11 May 2024</span>
+                    <span class="text-xs">Member since</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <dialog id="modal_profile" class="modal">
         <div class="modal-box">
             <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" @click="closeModal">✕</button>
