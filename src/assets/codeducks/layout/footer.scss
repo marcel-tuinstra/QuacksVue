@@ -1,14 +1,14 @@
 footer.navbar {
     --navbar-padding: .75rem .5rem;
 
-    align-items:     center;
-    justify-content: space-between;
+    align-items:      center;
+    justify-content:  space-between;
 
     .router-link, .router-link > div[role="button"] {
         align-items:     center;
         display:         flex;
         flex-direction:  column;
-        height:          50px;
+        height:          60px;
         justify-content: center;
         width:           80px;
 
@@ -25,7 +25,7 @@ footer.navbar {
     }
 
     a.router-link:not(.router-link-active),
-    .router-link > div[role="button"] {
+    .router-link:not(.router-link-active) > div[role="button"] {
         opacity: .5;
 
         &:focus,

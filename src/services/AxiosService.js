@@ -32,7 +32,6 @@ class AxiosService {
 
     handleError(error) {
         // Handle errors
-        console.error('API Error:', error);
         return Promise.reject(error);
     }
 
@@ -42,6 +41,10 @@ class AxiosService {
 
     post(url, body) {
         return this.instance.post(url, body);
+    }
+
+    put(url, body) {
+        return this.instance.put(url, body);
     }
 
     // Add other methods (put, delete, etc.) as needed

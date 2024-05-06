@@ -20,7 +20,7 @@ aside.navigation {
     }
 
     a.router-link:not(.router-link-active),
-    .router-link > div[role="button"] {
+    .router-link:not(.router-link-active) > div[role="button"] {
         opacity: .5;
 
         &:focus,

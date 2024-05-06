@@ -14,6 +14,14 @@ class UserAPI extends AxiosService {
         return this.post('/user', userData);
     }
 
+    updateUser(id, userDTO) {
+        if (id !== userDTO.id) {
+            throw new Error('Invalid User ID Provided.')
+        }
+
+        return this.put(`/user/${id}`, userDTO);
+    }
+
     // Additional user methods as needed
 }
 

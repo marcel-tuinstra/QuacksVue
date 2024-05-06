@@ -1,17 +1,22 @@
 // Define your icon sizes in a map
 $icon-sizes: (
-        'xs': 16px,
-        'sm': 20px,
+        'xs': 0.75rem,
+        'sm': 0.875rem,
         'md': 24px,
-        'lg': 32px,
-        'xl': 48px,
+        'lg': 1.125rem,
+        'xl': 1.25rem,
+        '2xl': 1.5rem,
+        '3xl': 1.875rem,
+        '4xl': 2.25rem,
+        '5xl': 3rem,
 );
 
 // Loop through the map to generate classes
 @each $size, $value in $icon-sizes {
-  .icon-#{$size} {
-    width: $value;
-    height: $value;
-    // Additional styles if needed
-  }
+    .icon-#{$size} {
+        font-size:  $value;
+        max-width:  $value;
+        max-height: $value;
+        // Additional styles if needed
+    }
 }
