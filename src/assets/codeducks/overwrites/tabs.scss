@@ -1,0 +1,116 @@
+.tabs {
+    &:hover {
+        .tab:is(button) {
+            i {
+                visibility: visible;
+
+                &:hover {
+                    opacity: 1;
+                }
+            }
+        }
+    }
+
+    .tab {
+        --tab-padding: .5rem;
+
+        &::after {
+            padding-left: .75rem;
+            text-indent:  var(--tab-padding, 1rem);
+            white-space:  nowrap;
+        }
+
+        &:is(button) > i {
+            opacity:    .5;
+            visibility: hidden;
+        }
+    }
+
+    .tab:is(input) {
+        &:not(input:checked)::before,
+        &:not(input:checked)::after {
+            opacity: .5;
+        }
+
+        &:hover {
+            &:not(input:checked)::before,
+            &:not(input:checked)::after {
+                opacity: 1;
+            }
+        }
+
+        &::before {
+            content:     '\f188';
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            left:        var(--tab-padding, 1rem);
+            position:    absolute;
+        }
+
+        &[data-icon="folder"] {
+            &::before {
+                content: '\e185';
+            }
+        }
+
+        &[data-icon="code"] {
+            &::before {
+                content: '\f5fc';
+            }
+        }
+
+        &[data-icon="server"] {
+            &::before {
+                content: '\f233';
+            }
+        }
+
+        &[data-icon="client"] {
+            &::before {
+                content: '\f508';
+            }
+        }
+
+        &[data-icon="house"] {
+            &::before {
+                content: '\e3b1';
+            }
+        }
+
+        &[data-icon="education"] {
+            &::before {
+                content: '\f19d';
+            }
+        }
+
+        &[data-icon="other"] {
+            &::before {
+                content: '\f1b3';
+            }
+        }
+
+        &[data-icon="day"] {
+            &::before {
+                content: '\f783';
+            }
+        }
+
+        &[data-icon="week"] {
+            &::before {
+                content: '\f784';
+            }
+        }
+
+        &[data-icon="month"] {
+            &::before {
+                content: '\f073';
+            }
+        }
+
+        &[data-icon="completed"] {
+            &::before {
+                content: '\f187';
+            }
+        }
+    }
+}

@@ -9,9 +9,9 @@
             <div class="md:hidden text-sm">
                 <span class="text-nowrap">{{ currentUser.email }}</span>
                 &#x2022;
-                <span class="text-nowrap">9 projects</span>
+                <span class="text-nowrap">{{ currentUser.counters.projects }} projects</span>
                 &#x2022;
-                <span class="text-nowrap">11 May 2024</span>
+                <span class="text-nowrap">{{ currentUser.meta.createdAt }}</span>
             </div>
         </div>
         <div class="absolute right-0 mt-2 md:mt-0 md:relative md:ms-auto">
@@ -24,14 +24,16 @@
     <div class="block md:flex md:gap-3 justify-between mt-5">
         <div class="opacity-25">Some reserved space :)</div>
         <div class="hidden md:block w-60 lg:w-72 bg-base-200 base-content p-3 rounded-lg">
-            <h3 class="font-bold text-lg text-nowrap border-b border-base-300 mb-2 pb-2 truncate">{{ currentUser.name }}</h3>
+            <h3 class="font-bold text-lg text-nowrap border-b border-base-300 mb-2 pb-2 truncate">
+                {{ currentUser.name }}
+            </h3>
             <div class="columns-2">
                 <div class="w-full flex flex-col">
-                    <span class="font-bold text-sm">9</span>
+                    <span class="font-bold text-sm">{{ currentUser.counters.projects }}</span>
                     <span class="text-xs">Projects</span>
                 </div>
                 <div class="w-full flex flex-col">
-                    <span class="font-bold text-sm">11 May 2024</span>
+                    <span class="font-bold text-sm">{{ memberSinceFormatted }}</span>
                     <span class="text-xs">Member since</span>
                 </div>
             </div>
@@ -40,19 +42,12 @@
 
     <dialog id="modal_profile" class="modal">
         <div class="modal-box">
-            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" @click="closeModal">✕</button>
-            <h3 class="font-bold text-lg">Edit your profile</h3>
+            <HeaderModalComponent @close-modal="closeModal" modal-heading="Edit your profile"/>
             <form id="user_profile_form" @submit.prevent="submitForm">
-                <div class="columns-1 md:columns-2">
-                    <TextInputComponent id="nickname" label="Nickname" required="0" disabled="0" :object="user"/>
-                    <TextInputComponent id="email" label="Email" required="1" disabled="1" :object="user"/>
-                </div>
+                <TextInputComponent id="email" label="Email" required="1" disabled="1" :object="user"/>
+                <TextInputComponent id="nickname" label="Nickname" required="0" disabled="0" :object="user"/>
             </form>
-
-            <div class="modal-action">
-                <button class="btn btn-outline" @click="closeModal">Close</button>
-                <button class="btn btn-primary" @click="submitForm">Save Changes</button>
-            </div>
+            <FooterModalComponent @close-modal="closeModal" @submit-modal="submitForm" submit-modal-button="Save Changes"/>
         </div>
     </dialog>
 </template>
@@ -60,12 +55,15 @@
 <script>
 import store from "@/store";
 import UserAPI from "@/services/UserAPI";
-import TextInputComponent from "@/components/TextInputComponent";
+import TextInputComponent from "@/components/form/TextInputComponent";
+import FooterModalComponent from "@/components/modal/FooterModalComponent";
+import HeaderModalComponent from "@/components/modal/HeaderModalComponent";
 import FormHelper from "@/helpers/FormHelper"
+import {formatAsDate} from "@/helpers/DateTimeHelper"
 
 export default {
     name: 'ProjectsView',
-    components: {TextInputComponent},
+    components: {FooterModalComponent, HeaderModalComponent, TextInputComponent},
     data: function () {
         return {
             user: {
@@ -113,6 +111,9 @@ export default {
     computed: {
         currentUser() {
             return store.getters.currentUser;
+        },
+        memberSinceFormatted() {
+            return formatAsDate(this.currentUser.meta.createdAt);
         }
     }
 }

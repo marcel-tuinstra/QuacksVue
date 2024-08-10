@@ -9,102 +9,31 @@
 @import './codeducks/layout/footer';
 
 // Overwrites
-.tabs {
-    .tab {
-        --tab-padding: .5rem;
+@import './codeducks/overwrites/tabs';
 
-        &::after {
-            padding-left: .75rem;
-            text-indent:  var(--tab-padding, 1rem);
-            white-space:  nowrap;
-        }
+.modal-box {
+    padding: 1rem 1.5rem;
 
-        &:is(button) > i {
-            opacity: .5;
-        }
-
-        &:is(button):hover > i {
-            opacity: 1;
-        }
+    h3 {
+        line-height:   1.75rem;
+        font-size:     1.125rem;
+        font-weight:   bold;
+        margin-bottom: .5rem;
     }
 
-    .tab:is(input) {
-        &:not(input:checked)::before, &:not(input:checked)::after {
-            opacity: .5;
-        }
-
-        &:hover {
-            &:not(input:checked)::before, &:not(input:checked)::after {
-                opacity: 1;
-            }
-        }
-
-        &::before {
-            content:     '\f188';
-            font-family: "Font Awesome 6 Free";
-            font-weight: 900;
-            left:        var(--tab-padding, 1rem);
-            position:    absolute;
-        }
-
-        &[data-icon="plus"] {
-            &::before {
-                content: '\2b';
-            }
-        }
-
-        &[data-icon="folder"] {
-            &::before {
-                content: '\e185';
-            }
-        }
-
-        &[data-icon="client"] {
-            &::before {
-                content: '\f508';
-            }
-        }
-
-        &[data-icon="side"] {
-            &::before {
-                content: '\f186';
-            }
-        }
-
-        &[data-icon="urgent"] {
-            &::before {
-                content: '\f06d';
-            }
-        }
-
-        &[data-icon="check"] {
-            &::before {
-                content: '\f058';
-            }
-        }
-
-        &[data-icon="day"] {
-            &::before {
-                content: '\f783';
-            }
-        }
-
-        &[data-icon="week"] {
-            &::before {
-                content: '\f784';
-            }
-        }
-
-        &[data-icon="month"] {
-            &::before {
-                content: '\f073';
-            }
-        }
-
-        &[data-icon="completed"] {
-            &::before {
-                content: '\f187';
-            }
-        }
+    .input {
+        height:        2.5rem;
+        padding-left:  .75rem;
+        padding-right: .75rem;
+        line-height:   1.5rem;
     }
+}
+
+.menu :where(li:not(.menu-title) > :not(ul, details, .menu-title, .btn)) {
+    padding: .25rem .75rem;
+}
+
+.menu-divider {
+    border-bottom: 1px solid rgba(0, 0, 0, .5);
+    margin:        .5rem 0;
 }
