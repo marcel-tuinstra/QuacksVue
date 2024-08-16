@@ -63,16 +63,22 @@
                         </colgroup>
                         <tbody>
                         <tr>
-                            <td><i class="fa-solid fa-layer-group"></i> Category</td>
-                            <td><SelectComponent id="category" required="1" disabled="0" :object="project" :options="categories" @onChange="updateProject"/></td>
+                            <td class="ps-0"><i class="fa-solid fa-layer-group"></i> Category</td>
+                            <td>
+                                <SelectComponent id="category" required="1" disabled="0" :object="project" :options="categories" @onChange="updateProject"/>
+                            </td>
                         </tr>
                         <tr>
-                            <td><i class="fa-solid fa-gauge"></i> Status</td>
-                            <td><SelectComponent id="status" required="1" disabled="0" :object="project" :options="statuses" @onChange="updateProject"/></td>
+                            <td class="ps-0"><i class="fa-solid fa-gauge"></i> Status</td>
+                            <td>
+                                <SelectComponent id="status" required="1" disabled="0" :object="project" :options="statuses" @onChange="updateProject"/>
+                            </td>
                         </tr>
                         <tr>
-                            <td><i class="fa-solid fa-calendar-days"></i> Due Date</td>
-                            <td><DateInputComponent id="dueAt" required="1" disabled="0" :object="project" @onChange="updateProject"/></td>
+                            <td class="ps-0"><i class="fa-solid fa-calendar-days"></i> Due Date</td>
+                            <td>
+                                <DateInputComponent id="dueAt" required="1" disabled="0" :object="project" @onChange="updateProject"/>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -80,6 +86,42 @@
                     <hr class="border-base-300 mx-4">
 
                     <TextareaComponent id="description" required="0" disabled="0" :object="project" @onChange="updateProject"/>
+
+                    <hr class="border-base-300 mx-4">
+
+
+                    <table class="table table-sm table-tasks">
+                        <colgroup>
+                            <col class="w-6">
+                            <col>
+                            <col class="w-4">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th class="ps-0 text-xl font-semibold text-base-content" colspan="3">Tasks</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="(task, index) in project.tasks">
+                            <td class="px-0">
+                                <input type="checkbox" :checked="task.completedAt !== null" @click="completeTask(task)" class="checkbox checkbox-sm mt-2"/>
+                            </td>
+                            <td>
+                                <TextInputComponent id="description" required="1" disabled="0" :object="task" @onChange="updateTask(task)"/>
+                            </td>
+                            <td class="px-0">
+                                <button class="btn btn-sm btn-square btn-outline" @click="deleteTask(task, index)">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-opacity-50 hover:text-opacity-100" @click="createTask">
+                                <i class="fa-solid fa-plus"></i> New
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -88,6 +130,7 @@
 
 <script>
 import ProjectAPI from "@/services/ProjectAPI";
+import TaskAPI from "@/services/project/TaskAPI";
 import CardComponent from "@/components/project/CardComponent";
 import DateInputComponent from "@/components/form/DateInputComponent";
 import SelectComponent from "@/components/form/SelectComponent";
@@ -95,6 +138,7 @@ import TextInputComponent from "@/components/form/TextInputComponent";
 import TextareaComponent from "@/components/form/TextareaComponent";
 import HeaderModalComponent from "@/components/modal/HeaderModalComponent";
 import FooterModalComponent from "@/components/modal/FooterModalComponent";
+import {now} from "@/helpers/DateTimeHelper";
 import FormHelper from "@/helpers/FormHelper";
 import ProjectHelper from "@/helpers/ProjectHelper";
 
@@ -126,6 +170,7 @@ export default {
                 status: null,
                 dueAt: null,
                 description: null,
+                tasks: [],
             },
         };
     },
@@ -135,13 +180,21 @@ export default {
                 .filter((project) => !project.meta.isDeleted)
 
             return this.applySortingByName(projects);
-        }
+        },
     },
     methods: {
         async getProjects() {
             try {
                 const response = await ProjectAPI.getProjects();
                 this.projects = response.data;
+            } catch (error) {
+                console.error('There was an error fetching the projects:', error);
+            }
+        },
+        async getTasks(project) {
+            try {
+                const response = await TaskAPI.getTasks(project);
+                this.project.tasks = response.data.filter((task) => !task.meta.isDeleted);
             } catch (error) {
                 console.error('There was an error fetching the projects:', error);
             }
@@ -175,6 +228,28 @@ export default {
                     console.error(responseData.errors);
                 });
         },
+        async updateTask(task) {
+            TaskAPI.updateTask(task.id, task)
+                .catch(function (error) {
+                    const responseData = error.response.data;
+
+                    console.error(responseData.errors);
+                });
+        },
+        async completeTask(task) {
+            if (task.completedAt === null) {
+                task.completedAt = now();
+            } else {
+                task.completedAt = null;
+            }
+
+            TaskAPI.updateTask(task.id, task)
+                .catch(function (error) {
+                    const responseData = error.response.data;
+
+                    console.error(responseData.errors);
+                });
+        },
         async deleteProject(project, index) {
             const vm = this;
 
@@ -182,6 +257,16 @@ export default {
                 .then(function (response) {
                     project.meta.isDeleted = true;
                     vm.projects[index].meta.isDeleted = true;
+
+                    document.activeElement.blur();
+                });
+        },
+        async deleteTask(task, taskIndex) {
+            const vm = this;
+
+            TaskAPI.deleteTask(task.id)
+                .then(function (response) {
+                    vm.project.tasks.splice(taskIndex, 1);
 
                     document.activeElement.blur();
                 });
@@ -197,6 +282,14 @@ export default {
                     document.activeElement.blur();
                 });
         },
+        async createTask() {
+            const vm = this;
+
+            TaskAPI.createTask(vm.project)
+                .then(function (response) {
+                    vm.project.tasks.push(response.data);
+                });
+        },
         mapUserProperties(objectDTO, object) {
             Object.keys(objectDTO).forEach(key => {
                 if (object === undefined) {
@@ -210,8 +303,9 @@ export default {
                 }
             });
         },
-        openProject(project) {
+        async openProject(project) {
             this.mapUserProperties(this.project, project);
+            this.getTasks(project);
         },
         openNewProjectModal() {
             this.mapUserProperties(this.project);
@@ -221,13 +315,6 @@ export default {
             modal_new_project.close();
             this.mapUserProperties(this.project);
             FormHelper.resetForm('new_project_form');
-        },
-        toLabel(type, value) {
-            if (type === 'status') {
-                return ProjectHelper.statusToLabel(value);
-            } else if (type === 'category') {
-                return ProjectHelper.categoryToLabel(value);
-            }
         },
         activeProjectsByCategory(category) {
             const projects = this.projects

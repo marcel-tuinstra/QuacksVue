@@ -37,3 +37,7 @@
     border-bottom: 1px solid rgba(0, 0, 0, .5);
     margin:        .5rem 0;
 }
+
+.table-tasks :where(thead tr, tbody tr:not(:last-child), tbody tr:first-child:last-child) {
+    border-bottom-color: var(--fallback-b3,oklch(var(--b3)/var(--tw-border-opacity)));
+}

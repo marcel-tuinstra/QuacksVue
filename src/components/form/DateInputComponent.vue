@@ -16,7 +16,6 @@
 
 <script>
 import {now} from "@/helpers/DateTimeHelper";
-import { format, parseISO } from 'date-fns';
 
 export default {
     name: 'TextInputComponent',
