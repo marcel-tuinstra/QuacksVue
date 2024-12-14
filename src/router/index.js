@@ -3,6 +3,7 @@ import {authGuard} from "@auth0/auth0-vue";
 import AuthService from "@/services/AuthService";
 import CallbackView from "@/views/CallbackView.vue";
 import HomeView from '@/views/HomeView.vue'
+import InvestmentsView from '@/views/InvestmentsView.vue'
 import ProjectsView from '@/views/ProjectsView.vue'
 import ProfileView from "@/views/ProfileView.vue";
 
@@ -43,10 +44,17 @@ const router = createRouter({
             beforeEnter: customAuthGuard
         },
         {
+            path: '/investment',
+            name: 'investment',
+            component: InvestmentsView,
+            meta: {title: 'Investments'},
+            beforeEnter: customAuthGuard
+        },
+        {
             path: '/project',
             name: 'project',
             component: ProjectsView,
-            meta: {title: 'Project Management'},
+            meta: {title: 'Projects'},
             beforeEnter: customAuthGuard
         },
         {

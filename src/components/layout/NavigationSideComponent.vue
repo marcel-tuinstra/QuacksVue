@@ -12,6 +12,11 @@
                 <span>Home</span>
             </router-link>
 
+            <router-link class="router-link" to="/investment">
+                <i class="fa-solid fa-money-bill-trend-up"></i>
+                <span>Investments</span>
+            </router-link>
+
             <router-link class="router-link" to="/project">
                 <i class="fa-solid fa-diagram-project"></i>
                 <span>Projects</span>
