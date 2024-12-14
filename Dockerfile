@@ -4,7 +4,7 @@ FROM node:20-alpine
 # Set the working directory in the container
 WORKDIR /app
 
-# Install app dependencies
+# Copy package.json and yarn.lock first to leverage Docker cache
 COPY package.json yarn.lock ./
 
 # Install project dependencies using yarn

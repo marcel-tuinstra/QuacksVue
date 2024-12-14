@@ -1,33 +1,54 @@
 <template>
-    <div>
-        <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" @click="getUsers()">Test call</button>
-        <ul>
-            <li v-for="(user, index) in users" :key="user.id">
-                {{ index }}: {{ user }}
-            </li>
-        </ul>
+    <greetings-and-quick-actions :user="currentUser" :projects="projects"/>
+
+    <div class="mt-10">
+        <h2 class="text-lg font-bold mb-4">Due Projects</h2>
+        <div class="space-y-4">
+            <card-component v-for="(project, index) in applySortingByDueDate(projects).slice(0, 3)"
+                            :key="project.id" :project="project" :index="index">
+            </card-component>
+        </div>
     </div>
 </template>
 
 <script>
-import UserAPI from "@/services/UserAPI";
+import store from "@/store";
+import CardComponent from "@/components/project/CardComponent.vue";
+import ProjectAPI from "@/services/ProjectAPI";
+import GreetingsAndQuickActions from "@/components/dashboard/GreetingsAndQuickActions.vue";
 
 export default {
     name: 'HomeView',
+    components: {GreetingsAndQuickActions, CardComponent},
     data: function () {
         return {
-            users: null
+            projects: []
         };
     },
-    methods: {
-        async getUsers() {
-            try {
-                const response = await UserAPI.getUsers();
-                this.users = response.data;
-            } catch (error) {
-                console.error('There was an error fetching the users:', error);
-            }
+    computed: {
+        currentUser() {
+            return store.getters.currentUser;
         }
+    },
+    methods: {
+        async getProjects() {
+            try {
+                const response = await ProjectAPI.getProjects();
+                this.projects = response.data;
+            } catch (error) {
+                console.error('There was an error fetching the projects:', error);
+            }
+        },
+        applySortingByDueDate(projects) {
+            return projects.sort((a, b) => {
+                const projectA = new Date(a.dueAt).getTime();
+                const projectB = new Date(b.dueAt).getTime();
+                return projectA - projectB;
+            });
+        }
+    },
+    mounted() {
+        this.getProjects();
     }
 }
 </script>

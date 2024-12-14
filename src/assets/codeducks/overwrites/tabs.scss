@@ -65,7 +65,7 @@
             }
         }
 
-        &[data-icon="client"] {
+        &[data-icon="user-tie"] {
             &::before {
                 content: '\f508';
             }
@@ -77,13 +77,13 @@
             }
         }
 
-        &[data-icon="education"] {
+        &[data-icon="graduation-cap"] {
             &::before {
                 content: '\f19d';
             }
         }
 
-        &[data-icon="other"] {
+        &[data-icon="cubes"] {
             &::before {
                 content: '\f1b3';
             }

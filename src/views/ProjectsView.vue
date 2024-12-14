@@ -5,7 +5,7 @@
         <input type="radio" name="project_tabs" role="tab" class="tab" data-icon="folder" aria-label="All" checked/>
         <div role="tabpanel" class="tab-content">
             <div class="flex flex-col md:flex-row md:flex-wrap gap-3 my-3">
-                <card-component v-for="(project, index) in activeProjects" v-show="!project.meta.isDeleted"
+                <card-component v-for="(project, index) in applySortingByName(projects)" v-show="!project.meta.isDeleted"
                                 :key="project.id" :project="project" :index="index"
                                 @preview="openProject" @delete="deleteProject" @clone="cloneProject"
                 ></card-component>
@@ -18,13 +18,16 @@
         </div>
 
         <template v-for="category in categories">
-            <input type="radio" name="project_tabs" role="tab" class="tab" :data-icon="category.icon" :aria-label="category.label"/>
+            <input type="radio" name="project_tabs" role="tab" class="tab" :data-icon="ProjectHelper.categoryToIcon(category)" :aria-label="ProjectHelper.categoryToLabel(category)"/>
             <div role="tabpanel" class="tab-content">
-                <div class="flex flex-col md:flex-row md:flex-wrap gap-3 my-3">
-                    <card-component v-for="(project, index) in activeProjectsByCategory(category.value)" v-show="!project.meta.isDeleted"
+                <div class="flex flex-col md:flex-row md:flex-wrap gap-3 my-3" v-if="hasProjectsByCategory(category.value)">
+                    <card-component v-for="(project, index) in projectsByCategory(category.value)"
                                     :key="project.id" :project="project" :index="index"
                                     @preview="openProject" @delete="deleteProject" @clone="cloneProject"
                     ></card-component>
+                </div>
+                <div class="my-3 opacity-50" v-else>
+                    <i>No projects created for {{ ProjectHelper.categoryToLabel(category) }}</i>
                 </div>
             </div>
         </template>
@@ -37,7 +40,7 @@
             <HeaderModalComponent @close-modal="closeNewProjectModal" modal-heading="New project"/>
             <form id="new_project_form" @submit.prevent="submitNewProjectForm">
                 <TextInputComponent id="title" label="Title" required="1" disabled="0" :object="project"/>
-                <SelectComponent id="category" label="Category" required="1" disabled="0" :object="project" :options="categories"/>
+                <SelectComponent id="category" label="Category" required="1" disabled="0" :object="project" :options="projectCategoryOptions"/>
                 <TextareaComponent id="description" label="Description" required="0" disabled="0" :object="project"/>
             </form>
             <FooterModalComponent @close-modal="closeNewProjectModal" @submit-modal="submitNewProjectForm" submit-modal-button="Save"/>
@@ -55,7 +58,7 @@
                 </h3>
                 <label for="drawer-project" class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4">✕</label>
 
-                <div class="drawer-content mt-3">
+                <div class="drawer-content my-3">
                     <table class="table table-sm">
                         <colgroup>
                             <col class="w-1/6">
@@ -65,13 +68,13 @@
                         <tr>
                             <td class="ps-0"><i class="fa-solid fa-layer-group"></i> Category</td>
                             <td>
-                                <SelectComponent id="category" required="1" disabled="0" :object="project" :options="categories" @onChange="updateProject"/>
+                                <SelectComponent id="category" required="1" disabled="0" :object="project" :options="projectCategoryOptions" @onChange="updateProject"/>
                             </td>
                         </tr>
                         <tr>
                             <td class="ps-0"><i class="fa-solid fa-gauge"></i> Status</td>
                             <td>
-                                <SelectComponent id="status" required="1" disabled="0" :object="project" :options="statuses" @onChange="updateProject"/>
+                                <SelectComponent id="status" required="1" disabled="0" :object="project" :options="projectStatusOptions" @onChange="updateProject"/>
                             </td>
                         </tr>
                         <tr>
@@ -83,45 +86,46 @@
                         </tbody>
                     </table>
 
-                    <hr class="border-base-300 mx-4">
+                    <div class="divider divider-start font-semibold mb-2">Description</div>
 
                     <TextareaComponent id="description" required="0" disabled="0" :object="project" @onChange="updateProject"/>
 
-                    <hr class="border-base-300 mx-4">
+                    <div class="divider divider-start font-semibold mb-2">Tasks</div>
 
+                    <ul id="task-list" class="list-none">
+                        <li v-for="(task, index) in project.tasks" :key="index" class="flex items-center gap-1 mb-2">
+                            <!-- Checkbox -->
+                            <input
+                                type="checkbox"
+                                :checked="task.completedAt !== null"
+                                @click="completeTask(task)"
+                                class="checkbox checkbox-sm"
+                            />
 
-                    <table class="table table-sm table-tasks">
-                        <colgroup>
-                            <col class="w-6">
-                            <col>
-                            <col class="w-4">
-                        </colgroup>
-                        <thead>
-                        <tr>
-                            <th class="ps-0 text-xl font-semibold text-base-content" colspan="3">Tasks</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="(task, index) in project.tasks">
-                            <td class="px-0">
-                                <input type="checkbox" :checked="task.completedAt !== null" @click="completeTask(task)" class="checkbox checkbox-sm mt-2"/>
-                            </td>
-                            <td>
-                                <TextInputComponent id="description" required="1" disabled="0" :object="task" @onChange="updateTask(task)"/>
-                            </td>
-                            <td class="px-0">
-                                <button class="btn btn-sm btn-square btn-outline" @click="deleteTask(task, index)">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="3" class="text-opacity-50 hover:text-opacity-100" @click="createTask">
-                                <i class="fa-solid fa-plus"></i> New
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                            <!-- Task Description Input -->
+                            <TextInputComponent
+                                id="description"
+                                additional-class="input-sm"
+                                required="1"
+                                disabled="0"
+                                :object="task"
+                                @onChange="updateTask(task)"
+                            />
+
+                            <!-- Delete Button -->
+                            <button
+                                class="btn btn-sm btn-square btn-outline"
+                                @click="deleteTask(task, index)"
+                            >
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </li>
+
+                        <!-- Add New Task Button -->
+                        <li class="text-opacity-50 hover:text-opacity-100 cursor-pointer pt-3" @click="createTask">
+                            <i class="fa-solid fa-plus"></i> New
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -147,21 +151,8 @@ export default {
     components: {CardComponent, FooterModalComponent, HeaderModalComponent, DateInputComponent, SelectComponent, TextInputComponent, TextareaComponent},
     data: function () {
         return {
-            categories: [
-                {'value': 'software_development', 'icon': 'code', 'label': ProjectHelper.categoryToLabel('software_development')},
-                {'value': 'devops', 'icon': 'server', 'label': ProjectHelper.categoryToLabel('devops')},
-                {'value': 'freelance', 'icon': 'client', 'label': ProjectHelper.categoryToLabel('freelance')},
-                {'value': 'home_projects', 'icon': 'house', 'label': ProjectHelper.categoryToLabel('home_projects')},
-                {'value': 'education', 'icon': 'education', 'label': ProjectHelper.categoryToLabel('education')},
-                {'value': 'other', 'icon': 'other', 'label': ProjectHelper.categoryToLabel('other')},
-            ],
-            statuses: [
-                {'value': 'not_started', 'label': ProjectHelper.statusToLabel('not_started')},
-                {'value': 'in_progress', 'label': ProjectHelper.statusToLabel('in_progress')},
-                {'value': 'in_testing', 'label': ProjectHelper.statusToLabel('in_testing')},
-                {'value': 'completed', 'label': ProjectHelper.statusToLabel('completed')},
-                {'value': 'halted', 'label': ProjectHelper.statusToLabel('halted')}
-            ],
+            categories: ProjectHelper.categories(),
+            statuses: ProjectHelper.statuses(),
             projects: [],
             project: {
                 id: null,
@@ -173,14 +164,6 @@ export default {
                 tasks: [],
             },
         };
-    },
-    computed: {
-        activeProjects() {
-            const projects = this.projects
-                .filter((project) => !project.meta.isDeleted)
-
-            return this.applySortingByName(projects);
-        },
     },
     methods: {
         async getProjects() {
@@ -288,6 +271,19 @@ export default {
             TaskAPI.createTask(vm.project)
                 .then(function (response) {
                     vm.project.tasks.push(response.data);
+
+                    vm.$nextTick(() => {
+                        // Get the last <li> element in the <ul> by selecting all and picking the last one
+                        const ulElement = document.getElementById('task-list');
+                        const liElements = ulElement.getElementsByTagName('li');
+                        const lastLiElement = liElements[liElements.length - 2];
+
+                        // Find the first input of type text within the last <li> element
+                        const inputElement = lastLiElement.querySelector('input[type="text"]');
+                        if (inputElement) {
+                            inputElement.focus();
+                        }
+                    });
                 });
         },
         mapUserProperties(objectDTO, object) {
@@ -309,6 +305,7 @@ export default {
         },
         openNewProjectModal() {
             this.mapUserProperties(this.project);
+            this.project.status = 'not_started';
             modal_new_project.showModal();
         },
         closeNewProjectModal() {
@@ -316,12 +313,17 @@ export default {
             this.mapUserProperties(this.project);
             FormHelper.resetForm('new_project_form');
         },
-        activeProjectsByCategory(category) {
+        projectsByCategory(category) {
             const projects = this.projects
-                .filter((project) => !project.meta.isDeleted)
                 .filter((project) => project.category === category);
 
             return this.applySortingByName(projects);
+        },
+        hasProjectsByCategory(category) {
+            const projects = this.projects
+                .filter((project) => project.category === category);
+
+            return projects.length > 0;
         },
         applySortingByName(projects) {
             return projects.sort((a, b) => { // Use two parameters, `a` and `b`, for comparison
@@ -338,6 +340,30 @@ export default {
 
                 return 0;
             });
+        }
+    },
+    computed: {
+        ProjectHelper() {
+            return ProjectHelper
+        },
+        projectCategoryOptions() {
+            let options = [];
+            options = this.categories.map((category) => ({
+                value: category,
+                icon: ProjectHelper.categoryToIcon(category),
+                label: ProjectHelper.categoryToLabel(category),
+            }));
+
+            return options;
+        },
+        projectStatusOptions() {
+            let options = [];
+            options = this.statuses.map((status) => ({
+                value: status,
+                label: ProjectHelper.statusToLabel(status),
+            }));
+
+            return options;
         }
     },
     mounted() {

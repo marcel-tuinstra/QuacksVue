@@ -35,6 +35,7 @@
                         @click.stop="selectOption(option)"
                         class="px-4 py-2 cursor-pointer hover:bg-gray-100"
                     >
+                        <i v-if="option.icon" class="w-6 me-1 fa-sm text-center fa-solid" :class="'fa-' + option.icon"></i>
                         <span>{{ option.label }}</span>
                     </div>
                 </div>

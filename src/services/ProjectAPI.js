@@ -2,8 +2,10 @@
 import AxiosService from './AxiosService';
 
 class ProjectAPI extends AxiosService {
-    getProjects(user) {
-        return this.get('/project');
+    getProjects(excludeDeleted = true) {
+        return this.get('/project', {
+            excludeDeleted: excludeDeleted,
+        });
     }
 
     getProjectById(id) {
