@@ -1,18 +1,22 @@
-# quacks
+# QuacksVue
 
-## Project setup
-```
-yarn install
-```
+Frontend voor Quacks: een lichte, taakgerichte applicatie geïnspireerd op tools zoals PivotalTracker of Jira, maar eenvoudiger in gebruik. Gebouwd met een focus op snelheid en overzicht. Momenteel wordt investment tracking als extra module ontwikkeld.
 
-### Create `.env.local` file in your project root dir
-```
-VUE_APP_API_BASE_URL=https://example.com/api
-VUE_APP_AUTH_DOMAIN=dev-xxxxx.us.auth0.com
-VUE_APP_AUTH_CLIENT_ID=xxxxx
+## Features
 
-```
+- Projecten en taken beheren via een intuïtieve interface
+- Drag & drop task management (Kanban-stijl)
+- Realtime updates via API
+- User authentication via backend
+- Responsive design geschikt voor mobiel gebruik
+- (WIP) Investment dashboard: assets toevoegen, waardes bekijken
+- (WIP) Grafieken & data visualisatie met Chart.js
 
-### Compiles and hot-reloads for development
-```
-yarn serve
+## Tech Stack
+
+- **Framework**: Vue 3
+- **State management**: Pinia
+- **Routing**: Vue Router
+- **API communicatie**: Axios
+- **UI**: Tailwind CSS
+- **Grafieken**: Chart.js
